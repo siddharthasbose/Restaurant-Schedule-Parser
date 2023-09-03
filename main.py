@@ -34,6 +34,10 @@ def main():
         rest = ['A-1 Cafe Restaurant', 'Nick\'s Lighthouse']
         logging.info("Restaurant Schedule")
         logging.info(QueryProcessor.get_restaurant_open_timings(processed_data, rest))
+
+        #insights
+        logging.info("Restaurant Schedule Insights")
+        logging.info(QueryProcessor.generate_insights(processed_data))
     except Exception as e:
         logging.error(f"Error: {e}")
 

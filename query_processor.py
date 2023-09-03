@@ -103,6 +103,12 @@ class QueryProcessor:
             # Day specific insights
             weekend_restaurants = df[df['day'].isin(['Sat', 'Sun'])]['restaurant_name'].nunique()
             insights['weekend_restaurants'] = weekend_restaurants
+            
+            sat_restaurants = df[df['day'].isin(['Sat'])]['restaurant_name'].nunique()
+            insights['sat_restaurants'] = sat_restaurants
+            
+            sun_restaurants = df[df['day'].isin(['Sun'])]['restaurant_name'].nunique()
+            insights['sun_restaurants'] = sun_restaurants
 
             # Operational consistency
             consistent_restaurants = df.groupby('restaurant_name').nunique()['open_time']
