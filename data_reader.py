@@ -26,25 +26,30 @@ class DataReader:
             dataframe: Name of Restaurants and their timings
         """
         rows = []
-        for filename in self.filenames:
+        try:
+            for filename in self.filenames:
+                
+                if(ParserUtils.is_valid_csv(filename)):
+                    logging.info(f"{filename} validated")
+                    with open(filename, 'r') as file:
+                        for line in file:
+                            line = line.strip()
             
-            if(ParserUtils.is_valid_csv(filename)):
-                logging.info(f"{filename} validated")
-                with open(filename, 'r') as file:
-                    for line in file:
-                        line = line.strip()
-        
-                        parts = line.split(',', 1)
-                        if len(parts) == 1:
-                        #TODO: Validate multiple splits
-                            match = re.search(r"(.*?)((?:mon|tue|wed|thu|fri|sat|sun).*?(?:am|pm).*$)", line, re.IGNORECASE)
-                            if match:
-                                start_index = match.start()
-                                rows.append(ParserUtils.clean_string(line[:start_index]), ParserUtils.clean_string(line[start_index:]))
-                        else:    
-                            rows.append((ParserUtils.clean_string(parts[0]), ParserUtils.clean_string(parts[1])))
-                        logging.debug(rows)
-
+                            parts = line.split(',', 1)
+                            if len(parts) == 1:
+                            #TODO: Validate multiple splits
+                                match = re.search(r"(.*?)((?:mon|tue|wed|thu|fri|sat|sun).*?(?:am|pm).*$)", line, re.IGNORECASE)
+                                if match:
+                                    start_index = match.start()
+                                    rows.append(ParserUtils.clean_string(line[:start_index]), ParserUtils.clean_string(line[start_index:]))
+                            else:    
+                                rows.append((ParserUtils.clean_string(parts[0]), ParserUtils.clean_string(parts[1])))
+                            logging.debug(rows)
+        except FileNotFoundError as f:
+            logging.error(f"Error :{f}")
+            raise f
+        except Exception as e:
+            logging.error(f"Error :{e}")
         return pd.DataFrame(rows, columns=['Restaurant', 'Timings'])
 
     def get_restaurants_df(self):

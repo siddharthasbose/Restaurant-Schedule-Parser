@@ -21,13 +21,18 @@ class QueryProcessor:
         Returns:
             list: Returns the list of open restaurants for a given day and time
         """
-        mask = (df['day'] == day)
-        if input_time:
-            input_datetime = datetime.strptime(input_time, "%I:%M %p") if ":" in input_time else datetime.strptime(input_time, "%I %p")
-            mask &= (df['open_time'] <= input_datetime) & (df['close_time'] >= input_datetime)
+        try:
+            mask = (df['day'] == day)
+            if input_time:
+                input_datetime = datetime.strptime(input_time, "%I:%M %p") if ":" in input_time else datetime.strptime(input_time, "%I %p")
+                mask &= (df['open_time'] <= input_datetime) & (df['close_time'] >= input_datetime)
 
-        open_restaurants = df[mask]['restaurant_name'].unique().tolist()
+            open_restaurants = df[mask]['restaurant_name'].unique().tolist()
+        except Exception as e:
+            logging.error(f"Error :{e}")
+            raise e
         return open_restaurants
+
 
     def get_restaurant_open_timings(df: pd.DataFrame, restaurant_names: Union[str, list]) -> dict:
         """
@@ -40,20 +45,25 @@ class QueryProcessor:
         Returns:
             dict: Name of restaurant and a list of open-close timings
         """
-        if isinstance(restaurant_names, str):
-            restaurant_names = [restaurant_names]
+        try:
 
-        relevant_data = df[df['restaurant_name'].isin(restaurant_names)]
+            if isinstance(restaurant_names, str):
+                restaurant_names = [restaurant_names]
+
+            relevant_data = df[df['restaurant_name'].isin(restaurant_names)]
 
 
-        timings_dict = {}
-        for restaurant in restaurant_names:
-            restaurant_df = relevant_data[relevant_data['restaurant_name'] == restaurant]
-            timings_list = []
-            for _, row in restaurant_df.iterrows():
-                timings_list.append(f"{row['day']}: {row['open_time'].strftime('%I:%M %p')} - {row['close_time'].strftime('%I:%M %p')}")
-            timings_dict[restaurant] = timings_list
-
+            timings_dict = {}
+            for restaurant in restaurant_names:
+                restaurant_df = relevant_data[relevant_data['restaurant_name'] == restaurant]
+                timings_list = []
+                for _, row in restaurant_df.iterrows():
+                    timings_list.append(f"{row['day']}: {row['open_time'].strftime('%I:%M %p')} - {row['close_time'].strftime('%I:%M %p')}")
+                timings_dict[restaurant] = timings_list
+        except Exception as e:
+            logging.error(f"Error :{e}")
+            raise e
+        
         return timings_dict
 
     def generate_insights(df):
@@ -66,37 +76,40 @@ class QueryProcessor:
         Returns:
             dict: Dictionary of insights
         """        """"""
-        insights = {}
+        try:
+            insights = {}
 
-        # General Insights
-        insights['total_restaurants'] = df['restaurant_name'].nunique()
-        common_open_time = df['open_time'].mode()[0]
-        common_close_time = df['close_time'].mode()[0]
-        insights['most_common_open_time'] = common_open_time
-        insights['most_common_close_time'] = common_close_time
+            # General Insights
+            insights['total_restaurants'] = df['restaurant_name'].nunique()
+            common_open_time = df['open_time'].mode()[0]
+            common_close_time = df['close_time'].mode()[0]
+            insights['most_common_open_time'] = common_open_time
+            insights['most_common_close_time'] = common_close_time
 
-        df['duration'] = (df['close_time'] - df['open_time']).dt.total_seconds() / 3600
-        insights['average_duration'] = df['duration'].mean()
+            df['duration'] = (df['close_time'] - df['open_time']).dt.total_seconds() / 3600
+            insights['average_duration'] = df['duration'].mean()
 
-        # Peak Hours
-        hours = [i for i in range(24)]
-        open_counts = [0 for _ in range(24)]
+            # Peak Hours
+            hours = [i for i in range(24)]
+            open_counts = [0 for _ in range(24)]
 
-        for _, row in df.iterrows():
-            for hour in range(int(row['open_time'].hour), int(row['close_time'].hour)):
-                open_counts[hour] += 1
+            for _, row in df.iterrows():
+                for hour in range(int(row['open_time'].hour), int(row['close_time'].hour)):
+                    open_counts[hour] += 1
 
-        peak_hour = hours[open_counts.index(max(open_counts))]
-        insights['most_busy_hour'] = peak_hour
+            peak_hour = hours[open_counts.index(max(open_counts))]
+            insights['most_busy_hour'] = peak_hour
 
-        # Day specific insights
-        weekend_restaurants = df[df['day'].isin(['Sat', 'Sun'])]['restaurant_name'].nunique()
-        insights['weekend_restaurants'] = weekend_restaurants
+            # Day specific insights
+            weekend_restaurants = df[df['day'].isin(['Sat', 'Sun'])]['restaurant_name'].nunique()
+            insights['weekend_restaurants'] = weekend_restaurants
 
-        # Operational consistency
-        consistent_restaurants = df.groupby('restaurant_name').nunique()['open_time']
-        insights['consistent_operating_restaurants'] = consistent_restaurants[consistent_restaurants == 1].count()
-
+            # Operational consistency
+            consistent_restaurants = df.groupby('restaurant_name').nunique()['open_time']
+            insights['consistent_operating_restaurants'] = consistent_restaurants[consistent_restaurants == 1].count()
+        except Exception as e:
+            logging.error(f"Error :{e}")
+            raise e
         return insights
     
 class TestQueryProcessor(unittest.TestCase):

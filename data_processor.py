@@ -28,30 +28,33 @@ class DataProcesser:
             pd.DataFrame: DataFrame with restaurants, day of week, open and close timings 
         """            
         records = []
+        try:
+            for index, row in df.iterrows():
+                restaurant, timings = row['Restaurant'], row['Timings']
+                logging.debug(f"Building {restaurant} {timings}")
+                restaurant = restaurant.strip()
+                for timing in timings.split('/'):
+                    weektimings = re.match(r"(.*?)\s+(?=\d+)(.*)", timing.strip()) # TODO Consider moving to constants?
+                    days_str = weektimings.group(1)
+                    times_str = weektimings.group(2)
 
-        for index, row in df.iterrows():
-            restaurant, timings = row['Restaurant'], row['Timings']
-            logging.debug(f"Building {restaurant} {timings}")
-            restaurant = restaurant.strip()
-            for timing in timings.split('/'):
-                weektimings = re.match(r"(.*?)\s+(?=\d+)(.*)", timing.strip()) # TODO Consider moving to constants?
-                days_str = weektimings.group(1)
-                times_str = weektimings.group(2)
+                    start_time, end_time = ParserUtils.extract_time(times_str)
 
-                start_time, end_time = ParserUtils.extract_time(times_str)
+                    # If end_time < start_time, means the time is beyond 24 hours and flows to the next day
+                    if end_time and start_time and end_time < start_time:
+                        for day in ParserUtils.extract_days(days_str):
+                            records.append((restaurant, day, start_time, datetime.strptime("11:59 PM", "%I:%M %p")))
+                            next_day = ParserUtils.days[(ParserUtils.days.index(day) + 1) % 7]
+                            records.append((restaurant, next_day, datetime.strptime("12:00 AM", "%I:%M %p"), end_time))
+                    else:
+                        for day in ParserUtils.extract_days(days_str):
+                            records.append((restaurant, day, start_time, end_time))
 
-                # If end_time < start_time, means the time is beyond 24 hours and flows to the next day
-                if end_time and start_time and end_time < start_time:
-                    for day in ParserUtils.extract_days(days_str):
-                        records.append((restaurant, day, start_time, datetime.strptime("11:59 PM", "%I:%M %p")))
-                        next_day = ParserUtils.days[(ParserUtils.days.index(day) + 1) % 7]
-                        records.append((restaurant, next_day, datetime.strptime("12:00 AM", "%I:%M %p"), end_time))
-                else:
-                    for day in ParserUtils.extract_days(days_str):
-                        records.append((restaurant, day, start_time, end_time))
-
-        df = pd.DataFrame(records, columns=['restaurant_name', 'day', 'open_time', 'close_time'])
-        logging.debug(df)
+            df = pd.DataFrame(records, columns=['restaurant_name', 'day', 'open_time', 'close_time'])
+            logging.debug(df)
+        except Exception as e:
+            logging.error(f"Error :{e}")
+            raise e
         return df
 
 class TestQueryProcessor(unittest.TestCase):
