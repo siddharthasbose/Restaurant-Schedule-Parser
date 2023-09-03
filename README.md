@@ -5,25 +5,25 @@ This Python module processes restaurant schedules from multiple CSV files and pr
 
 ### Code Structure
 
-1. **Main.py**: This script serves as the main entry point for the entire program. It loads the CSV files, processes the data, and then performs some basic queries for demonstration purposes.
+1. **main.py**: This script serves as the main entry point for the entire program. It loads the CSV files, processes the data, and then performs some basic queries for demonstration purposes.
   
-2. **Datareader.py**: Responsible for reading the CSV files. This file:
+2. **data_reader.py**: Responsible for reading the CSV files. This file:
     - Reads data from CSV
     - Validates the data format
     - Uses regular expressions to handle edge cases (like missing commas)
     - Generates a DataFrame with restaurant names and timings
 
-3. **Data_processer.py**: Responsible for processing the data into a structured format. It:
+3. **data_processer.py**: Responsible for processing the data into a structured format. It:
     - Parses the timings from the string format
     - Splits timings based on day and time intervals
     - Handles edge cases like timings that go past midnight
 
-4. **Query_processor.py**: Used for querying the processed data. It supports:
+4. **query_processor.py**: Used for querying the processed data. It supports:
     - Retrieving restaurants open at a given day and/or time
     - Getting opening timings for specific restaurants
     - Generating insights from the restaurant data
 
-5. **Utils.py**: Provides utility functions used across all modules. Contains:
+5. **utils.py**: Provides utility functions used across all modules. Contains:
     - A function to extract days from a given string format
     - A function to extract time intervals from a given string format
     - String cleaning utility
@@ -34,13 +34,13 @@ This Python module processes restaurant schedules from multiple CSV files and pr
 #### Regular Expressions (Regex):
 Regex is heavily used throughout the codebase to extract and validate data from the CSV files and the strings within them. 
 
-For instance, in **Datareader.py**:
+For instance, in **data_reader.py**:
 ```python
 match = re.search(r"(.*?)((?:mon|tue|wed|thu|fri|sat|sun).*?(?:am|pm).*$)", line, re.IGNORECASE)
 ```
 This regex captures restaurant names and their timings. It's designed to capture a pattern starting with days (like Mon, Tue, etc.) and ending with times (like am, pm) to isolate an index for spliting (for handling irregular data)
 
-Similarly, in **Data_processer.py**:
+Similarly, in **data_processer.py**:
 ```python
 weektimings = re.match(r"(.*?)\s+(?=\d+)(.*)", timing.strip())
 ```
@@ -59,7 +59,7 @@ To execute the program:
 
 1. Ensure that all required libraries are installed. The main libraries used are `pandas`, `datetime`, and `logging`.
 2. Place your input CSV files in the `input_files` directory.
-3. Update the `filenames` list in **Main.py** to point to your CSV files.
+3. Update the `filenames` list in **main.py** to point to your CSV files.
 4. Run `Main.py`.
 
 ### Logging
