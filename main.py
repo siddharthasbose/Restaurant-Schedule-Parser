@@ -8,7 +8,6 @@ logging.basicConfig(level=logging.INFO, format='%(name)s - %(levelname)s - %(mes
 def main():
     # 1. Read the data
     filenames = ["input_files\dining_places_open_hrs_1.csv", "input_files\dining_places_open_hrs_2.csv"]
-    # filenames = ["input_files\dining_places_open_hrs_debug1.csv"]
     logging.info("Reading files {}".format(filenames))
     reader = DataReader(filenames)
 

@@ -66,9 +66,11 @@ class ParserUtils:
         # Extract timings using regex
         times = re.findall(r'(\d{1,2}(?::\d{2})?\s*[apm]{2})', time_str, re.IGNORECASE)
 
-        open_time = datetime.strptime(times[0], "%I:%M %p") if ":" in times[0] else datetime.strptime(times[0], "%I %p")
-        close_time = datetime.strptime(times[1], "%I:%M %p") if ":" in times[1] else datetime.strptime(times[1], "%I %p")
-
+        try:
+            open_time = datetime.strptime(times[0], "%I:%M %p") if ":" in times[0] else datetime.strptime(times[0], "%I %p")
+            close_time = datetime.strptime(times[1], "%I:%M %p") if ":" in times[1] else datetime.strptime(times[1], "%I %p")
+        except ValueError as ve:
+            logging.error("Failed to parse time %s %s", time_str, ve)
         return open_time, close_time
     
     @staticmethod
@@ -124,6 +126,8 @@ class TestParserUtils(unittest.TestCase):
         # Test basic timings
         self.assertEqual(ParserUtils.clean_string('"Mon -Fri 11 am - 1 pm,'), "Mon -Fri 11 am - 1 pm")
         self.assertEqual(ParserUtils.clean_string('Mon -Fri 11 am - 1 pm",'), "Mon -Fri 11 am - 1 pm")
+
+    
 
 if __name__ == '__main__':
     unittest.main()

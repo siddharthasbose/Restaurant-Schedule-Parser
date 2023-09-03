@@ -16,7 +16,8 @@ class DataProcesser:
         2. Iterate through timings separated by /
         3. Split the timing string to day of the week and the time range
         4. Iterate over the days of the week and and store timings for each day
-        5. Handle 24 hour boundary to capture open timings after 12:00 AM
+        5. Handle 24 hour boundary to capture open timings after 12:00 AM. 
+           Create new entry for next day starting at 12:00AM
         6. Returns a dataframe with multiple rows (if restaurant is open for multiple time windows) 
            for restaurant names, day of week, open and close timings
 
