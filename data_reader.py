@@ -28,16 +28,14 @@ class DataReader:
         rows = []
         try:
             for filename in self.filenames:
-                
                 if(ParserUtils.is_valid_csv(filename)):
-                    logging.info(f"{filename} validated")
+                    logging.debug(f"{filename} validated")
                     with open(filename, 'r') as file:
                         for line in file:
                             line = line.strip()
             
                             parts = line.split(',', 1)
                             if len(parts) == 1:
-                            #TODO: Validate multiple splits
                                 match = re.search(r"(.*?)((?:mon|tue|wed|thu|fri|sat|sun).*?(?:am|pm).*$)", line, re.IGNORECASE)
                                 if match:
                                     start_index = match.start()
@@ -53,6 +51,10 @@ class DataReader:
         except Exception as e:
             logging.error(f"Error :{e}")
 
+        # check if the list is empty
+        if not rows:
+            raise Exception("No data found in the {filenames}")
+        
         return pd.DataFrame(rows, columns=['Restaurant', 'Timings'])
 
     def get_restaurants_df(self):

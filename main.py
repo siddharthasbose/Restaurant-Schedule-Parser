@@ -4,13 +4,12 @@ from data_reader import DataReader
 from query_processor import QueryProcessor
 import logging
 
-logging.basicConfig(level=logging.INFO, format='%(name)s - %(levelname)s - %(message)s')
+logging.basicConfig(level=logging.INFO)
 
 def main():
     try:
         # 1. Read the data
         filenames = ["input_files\dining_places_open_hrs_1.csv", "input_files\dining_places_open_hrs_2.csv"]
-        # filenames = ["input_files\dining_places_open_hrs_dbg.csv"]
         logging.info("Reading files {}".format(filenames))
         reader = DataReader(filenames)
 
@@ -42,7 +41,6 @@ def main():
         logging.info(QueryProcessor.generate_insights(processed_data))
     except Exception as e:
         logging.error(f"Error: {e}")
-        # traceback.print_exc()
 
 if __name__ == "__main__":
     main()

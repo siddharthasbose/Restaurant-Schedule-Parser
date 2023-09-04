@@ -29,7 +29,7 @@ class DataProcesser:
         """            
         records = []
         try:
-            for index, row in df.iterrows():
+            for _, row in df.iterrows():
                 restaurant, timings = row['Restaurant'], row['Timings']
                 logging.debug(f"Building {restaurant} {timings}")
                 restaurant = restaurant.strip()
@@ -39,7 +39,16 @@ class DataProcesser:
                     times_str = weektimings.group(2)
 
                     start_time, end_time = ParserUtils.extract_time(times_str)
-
+                   
+                    # check if start_time or end_time is None
+                    if not start_time or not end_time:
+                        logging.debug(f"Invalid time format {times_str}: Skipping restaurant {restaurant}")
+                        continue
+                    # check if days_str is None or not parsed
+                    if not days_str or not ParserUtils.extract_days(days_str):
+                        logging.debug(f"Invalid days format {days_str}: Skipping restaurant {restaurant}")
+                        continue
+                    
                     # If end_time < start_time, means the time is beyond 24 hours and flows to the next day
                     if end_time and start_time and end_time < start_time:
                         for day in ParserUtils.extract_days(days_str):
@@ -54,7 +63,6 @@ class DataProcesser:
             logging.debug(df)
         except Exception as e:
             logging.error(f"Error :{e}")
-            raise e
         return df
 
 class TestQueryProcessor(unittest.TestCase):

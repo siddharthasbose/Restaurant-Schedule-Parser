@@ -1,5 +1,6 @@
 import logging
 import os
+from pathlib import Path
 import pandas as pd
 import re
 from datetime import datetime, time
@@ -78,14 +79,15 @@ class ParserUtils:
         return input_str.strip(' ",')
     
     @staticmethod
-    def is_valid_csv(file_path, expected_header=None, delimiter=","):
+    def is_valid_csv(file_path: str) -> bool:
         # Check if file exists
         if not os.path.exists(file_path):
             logging.error(f"{file_path} does not exist.")
             return False
-
+        
         # Check file size (example: > 0 bytes)
         if os.path.getsize(file_path) == 0:
+        # if Path(file_path).stat().st_size == 0:
             logging.error(f"{file_path} is empty.")
             return False
 
@@ -127,7 +129,11 @@ class TestParserUtils(unittest.TestCase):
         self.assertEqual(ParserUtils.clean_string('"Mon -Fri 11 am - 1 pm,'), "Mon -Fri 11 am - 1 pm")
         self.assertEqual(ParserUtils.clean_string('Mon -Fri 11 am - 1 pm",'), "Mon -Fri 11 am - 1 pm")
 
-    
+    def test_is_valid_csv(self):
+        self.assertFalse(ParserUtils.is_valid_csv("input_files\empty_file.csv"))
+        self.assertFalse(ParserUtils.is_valid_csv("input_files\invalid_file.csv"))
+        self.assertTrue(ParserUtils.is_valid_csv("input_files\dining_places_open_hrs_1.csv"))
+        self.assertTrue(ParserUtils.is_valid_csv("input_files\empty.csv"))
 
 if __name__ == '__main__':
     unittest.main()
