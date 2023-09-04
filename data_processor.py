@@ -9,7 +9,7 @@ from utils import ParserUtils
 logging.basicConfig( level=logging.DEBUG, format='%(name)s - %(levelname)s - %(message)s')
 
 class DataProcesser:
-
+        
     def build_restaurant_df(df: pd.DataFrame) -> pd.DataFrame:
         """
         1. Read the dataframe with restaurant names and timings

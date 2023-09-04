@@ -45,11 +45,14 @@ class DataReader:
                             else:    
                                 rows.append((ParserUtils.clean_string(parts[0]), ParserUtils.clean_string(parts[1])))
                             logging.debug(rows)
+                else:
+                    raise Exception("Invalid file")
         except FileNotFoundError as f:
             logging.error(f"Error :{f}")
             raise f
         except Exception as e:
             logging.error(f"Error :{e}")
+
         return pd.DataFrame(rows, columns=['Restaurant', 'Timings'])
 
     def get_restaurants_df(self):

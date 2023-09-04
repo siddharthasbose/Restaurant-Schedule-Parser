@@ -50,8 +50,16 @@ in **utils.py**:
 ```python
 times = re.findall(r'(\d{1,2}(?::\d{2})?\s*[apm]{2})', time_str, re.IGNORECASE)
 ```
-This regex captures timings from the given input string. Handles optional minutes (1 am and 1:00 am)
-Will accept 1:00 pa, 10:30 ap and 9 mp  (instead of am/pm)  
+This regex captures timings from the given input string. Handles optional minutes (1 am and 1:00 am). Will accept 1:00 pa, 10:30 ap and 9 mp  (instead of am/pm)  
+
+### Installing Dependencies
+
+This project has a few dependencies, which are listed in the requirements.txt file. You can install these dependencies using the following command:
+```sh
+pip install -r requirements.txt
+```
+
+
 
 ### Running the Code
 
