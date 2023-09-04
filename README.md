@@ -16,7 +16,7 @@ This Python module processes restaurant schedules from multiple CSV files and pr
 3. **data_processer.py**: Responsible for processing the data into a structured format. It:
     - Parses the timings from the string format
     - Splits timings based on day and time intervals
-    - Handles edge cases like timings that go past midnight
+    - Handles edge cases like timings that go past midnight (Day will end at 11:59PM)
 
 4. **query_processor.py**: Used for querying the processed data. It supports:
     - Retrieving restaurants open at a given day and/or time
@@ -59,17 +59,25 @@ This project has a few dependencies, which are listed in the requirements.txt fi
 pip install -r requirements.txt
 ```
 
-
-
 ### Running the Code
 
 To execute the program:
 
-1. Ensure that all required libraries are installed. The main libraries used are `pandas`, `datetime`, and `logging`.
-2. Place your input CSV files in the `input_files` directory.
-3. Update the `filenames` list in **main.py** to point to your CSV files.
-4. Run `Main.py`.
+1. Ensure that all required libraries are installed. The main libraries used are `pandas`, `datetime`, and `logger`
+2. Place your input CSV files in the `input_files` directory
+3. Update the `filenames` list in **main.py** to point to your CSV files
+4. Run `Main.py`
 
-### Logging
+### logger
 
-The codebase uses Python's built-in logging module to log various messages at different severity levels (DEBUG, INFO, ERROR). By default, it's set to display INFO level logs, but you can adjust this to see more detailed debug logs or just critical errors.
+The codebase uses Python's built-in logger module to log various messages at different severity levels (DEBUG, INFO, ERROR). By default, it's set to display INFO level logs, but you can adjust this to see more detailed debug logs or just critical errors.
+
+### Opportunities and Next Steps
+
+1. Better handle exceptions and edge cases
+2. Create a DataFrame with day and hour matrix to store open restuarants instead of querying restuarants df
+3. Add String formatter method to pretty print query results
+4. Add restaurant close time prompts. E.g Input: Mon 11:00 Output: Open Restaurants: Res 1, Res 2 (Closing in 1 hour) 
+5. Handle full day strings like Sunday/Monday
+6. Create Constants file and move reused strings  
+

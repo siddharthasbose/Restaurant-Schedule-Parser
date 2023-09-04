@@ -1,12 +1,15 @@
 import logging
+import os
 import pandas as pd
 import re
 from datetime import datetime, time
 from typing import List, Dict, Optional, Union
 import unittest
 
-logging.basicConfig( level=logging.DEBUG, format='%(name)s - %(levelname)s - %(message)s')
+filename = os.path.basename(__file__)
 
+logging.basicConfig( level=logging.DEBUG, format='%(name)s - %(levelname)s - %(message)s')
+logger = logging.getLogger(filename)
 
 class QueryProcessor:
 
@@ -29,7 +32,7 @@ class QueryProcessor:
 
             open_restaurants = df[mask]['restaurant_name'].unique().tolist()
         except Exception as e:
-            logging.error(f"Error :{e}")
+            logger.error(e)
             raise e
         return open_restaurants
 
@@ -61,7 +64,7 @@ class QueryProcessor:
                     timings_list.append(f"{row['day']}: {row['open_time'].strftime('%I:%M %p')} - {row['close_time'].strftime('%I:%M %p')}")
                 timings_dict[restaurant] = timings_list
         except Exception as e:
-            logging.error(f"Error :{e}")
+            logger.error(e)
             raise e
         
         return timings_dict
@@ -114,7 +117,7 @@ class QueryProcessor:
             consistent_restaurants = df.groupby('restaurant_name').nunique()['open_time']
             insights['consistent_operating_restaurants'] = consistent_restaurants[consistent_restaurants == 1].count()
         except Exception as e:
-            logging.error(f"Error :{e}")
+            logger.error(e)
             raise e
         return insights
     

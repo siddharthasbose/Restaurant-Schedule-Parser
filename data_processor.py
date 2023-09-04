@@ -1,12 +1,15 @@
 import logging
+import os
 import pandas as pd
 import re
-from datetime import datetime, time
-from typing import List, Dict, Optional, Union
+from datetime import datetime
 import unittest
 from utils import ParserUtils
 
-logging.basicConfig( level=logging.DEBUG, format='%(name)s - %(levelname)s - %(message)s')
+filename = os.path.basename(__file__)
+
+logging.basicConfig(level=logging.DEBUG, format='%(name)s - %(levelname)s - %(message)s')
+logger = logging.getLogger(filename)
 
 class DataProcesser:
         
@@ -31,7 +34,7 @@ class DataProcesser:
         try:
             for _, row in df.iterrows():
                 restaurant, timings = row['Restaurant'], row['Timings']
-                logging.debug(f"Building {restaurant} {timings}")
+                logger.debug(f"Building {restaurant} {timings}")
                 restaurant = restaurant.strip()
                 for timing in timings.split('/'):
                     weektimings = re.match(r"(.*?)\s+(?=\d+)(.*)", timing.strip()) # TODO Consider moving to constants?
@@ -42,11 +45,11 @@ class DataProcesser:
                    
                     # check if start_time or end_time is None
                     if not start_time or not end_time:
-                        logging.debug(f"Invalid time format {times_str}: Skipping restaurant {restaurant}")
+                        logger.debug(f"Invalid time format {times_str}: Skipping restaurant {restaurant}")
                         continue
                     # check if days_str is None or not parsed
                     if not days_str or not ParserUtils.extract_days(days_str):
-                        logging.debug(f"Invalid days format {days_str}: Skipping restaurant {restaurant}")
+                        logger.debug(f"Invalid days format {days_str}: Skipping restaurant {restaurant}")
                         continue
                     
                     # If end_time < start_time, means the time is beyond 24 hours and flows to the next day
@@ -60,9 +63,9 @@ class DataProcesser:
                             records.append((restaurant, day, start_time, end_time))
 
             df = pd.DataFrame(records, columns=['restaurant_name', 'day', 'open_time', 'close_time'])
-            logging.debug(df)
+            logger.debug(df)
         except Exception as e:
-            logging.error(f"Error :{e}")
+            logger.error(e)
         return df
 
 class TestQueryProcessor(unittest.TestCase):
@@ -84,7 +87,7 @@ class TestQueryProcessor(unittest.TestCase):
     def test_build_restaurant_df(self):   
         df = pd.DataFrame(self.sample_data)
         result_df = DataProcesser.build_restaurant_df(df)
-        logging.debug(result_df)
+        logger.debug(result_df)
         # Test cases for "A-1 Cafe Restaurant"
         self.assertEqual(len(result_df[result_df['restaurant_name'] == "A-1 Cafe Restaurant"]), 6)
         monday_open_time = result_df[

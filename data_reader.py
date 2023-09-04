@@ -7,7 +7,10 @@ import re
 
 from utils import ParserUtils
 
-logging.basicConfig( level=logging.DEBUG, format='%(name)s - %(levelname)s - %(message)s')
+filename = os.path.basename(__file__)
+
+logging.basicConfig(level=logging.DEBUG, format='%(name)s - %(levelname)s - %(message)s')
+logger = logging.getLogger(filename)
 
 class DataReader:
     def __init__(self, filenames):
@@ -29,7 +32,7 @@ class DataReader:
         try:
             for filename in self.filenames:
                 if(ParserUtils.is_valid_csv(filename)):
-                    logging.debug(f"{filename} validated")
+                    logger.debug(f"{filename} validated")
                     with open(filename, 'r') as file:
                         for line in file:
                             line = line.strip()
@@ -42,18 +45,18 @@ class DataReader:
                                     rows.append(ParserUtils.clean_string(line[:start_index]), ParserUtils.clean_string(line[start_index:]))
                             else:    
                                 rows.append((ParserUtils.clean_string(parts[0]), ParserUtils.clean_string(parts[1])))
-                            logging.debug(rows)
+                            logger.debug(rows)
                 else:
                     raise Exception("Invalid file")
         except FileNotFoundError as f:
-            logging.error(f"Error :{f}")
+            logger.error(f)
             raise f
         except Exception as e:
-            logging.error(f"Error :{e}")
+            logger.error(e)
 
         # check if the list is empty
         if not rows:
-            raise Exception("No data found in the {filenames}")
+            raise Exception(f"No data found in the {self.filenames}")
         
         return pd.DataFrame(rows, columns=['Restaurant', 'Timings'])
 

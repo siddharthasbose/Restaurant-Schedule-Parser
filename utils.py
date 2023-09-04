@@ -7,7 +7,10 @@ from datetime import datetime, time
 from typing import List, Dict, Optional, Union
 import unittest
 
+filename = os.path.basename(__file__)
+
 logging.basicConfig( level=logging.DEBUG, format='%(name)s - %(levelname)s - %(message)s')
+logger = logging.getLogger(filename)
 
 class ParserUtils:
 
@@ -71,7 +74,7 @@ class ParserUtils:
             open_time = datetime.strptime(times[0], "%I:%M %p") if ":" in times[0] else datetime.strptime(times[0], "%I %p")
             close_time = datetime.strptime(times[1], "%I:%M %p") if ":" in times[1] else datetime.strptime(times[1], "%I %p")
         except ValueError as ve:
-            logging.error("Failed to parse time %s %s", time_str, ve)
+            logger.error("Failed to parse time %s %s", time_str, ve)
         return open_time, close_time
     
     @staticmethod
@@ -82,13 +85,13 @@ class ParserUtils:
     def is_valid_csv(file_path: str) -> bool:
         # Check if file exists
         if not os.path.exists(file_path):
-            logging.error(f"{file_path} does not exist.")
+            logger.error(f"{file_path} does not exist.")
             return False
         
         # Check file size (example: > 0 bytes)
         if os.path.getsize(file_path) == 0:
         # if Path(file_path).stat().st_size == 0:
-            logging.error(f"{file_path} is empty.")
+            logger.error(f"{file_path} is empty.")
             return False
 
         return True
